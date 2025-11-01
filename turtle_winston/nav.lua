@@ -1,5 +1,7 @@
 -- Nav.lua -- 
-local Nav = {}
+require("state_manager")
+
+
 
 function positionDifference(inital, final)
     return {
@@ -49,6 +51,7 @@ function turnRight()
             local newIndex = (i % 4) + 1
             settings.set("nav.currentDirection", directions[newIndex])
             print("Now facing " .. directions[newIndex])
+            settings.save()
             return
         end
     end
@@ -66,13 +69,16 @@ function turnLeft()
             local newIndex = (i - 2) % 4 + 1
             settings.set("nav.currentDirection", directions[newIndex])
             print("Now facing " .. directions[newIndex])
+            settings.save()
             return
         end
     end
 end
 
 
-function turnTo(direction)
+
+function turnTo(direction, offset)
+    offset = offset or 0
     local currentDirection = settings.get("nav.currentDirection")
     print(currentDirection)
     if not currentDirection then
@@ -86,10 +92,9 @@ function turnTo(direction)
             currentIndex = i
         end
         if dir == direction then
-            targetIndex = i
+            targetIndex = i + offset
         end
     end
-
     local diff = (targetIndex - currentIndex) % 4
 
     if diff == 1 then
@@ -101,10 +106,38 @@ function turnTo(direction)
         turnLeft()
     end
 end
-    
+
+function invTurnTo(direction)
+    local inverse
+    if direction == "north" then
+        inverse = "south"
+    elseif direction == "east" then
+        inverse = "west"
+    elseif direction == "south" then
+        inverse = "north"
+    elseif direction == "west" then
+        inverse = "east"
+    else
+        error("Not valid direction")
+    end
+    turnTo(inverse)
+end
+
+function moveWaypoint(waypoint_name)
+    local waypoint = textutils.unserialize(settings.get("sm.states") )[waypoint_name]
+    if not waypoint then
+        return false
+    end
+    moveTo(waypoint.x, waypoint.y, waypoint.z)
+    if waypoint.facing then
+        turnTo(waypoint.facing)
+        end
+    return true
+
+end
 
 
-function moveTo(x, y, z)
+function moveTo(x, y, z, type)
     local position = {}
     local isMove = true
     position.x, position.y, position.z = gps.locate()
@@ -129,16 +162,14 @@ function moveTo(x, y, z)
         elseif position.x > x then
             turnTo("west")
             isMove = isMove and turtle.forward()
-        
-        
 
         elseif position.z < z then
-            turnTo("north")
+            turnTo("south")
             isMove = isMove and turtle.forward()
             
             
         elseif position.z > z then
-            turnTo("south")
+            turnTo("north")
             isMove = isMove and turtle.forward()
         
         end
