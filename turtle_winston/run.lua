@@ -6,22 +6,34 @@ function mainLoop(row, col)
     local starting_face = getCurrentDirection()
     row = tonumber(row)
     col = tonumber(col)
+    print("col: "..col.." row: "..row)
+    local isLastTurnRight = true 
     while true do
-        for i = 0, row do
-            for j = 0, col do
-                
-                if (j + 1) < col then
+        for i = 1, row do
+            for j = 1, col - 1 do
+                turtle.dig()
+                turtle.forward() 
+            end
+            if i < row then
+                if isLastTurnRight then
+                    turnRight()
                     turtle.dig()
-                    turtle.forward() 
+                    turtle.forward()
+                    turnRight()
+                    isLastTurnRight = false
+                else
+                    turnLeft()
+                    turtle.dig()
+                    turtle.forward()
+                    turnLeft()
+                    isLastTurnRight = true
                 end
             end
-            if (i % 2) == 0 then
-                turnTo(starting_face, 2)
-            else
-                turnTo(starting_face)
-            end
+            
         end
-        turnTo(starting_face)
+        turnLeft()
+        turnLeft()
+        
         turtle.digDown()
         turtle.down()
     end
