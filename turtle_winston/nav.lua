@@ -107,21 +107,6 @@ function turnTo(direction, offset)
     end
 end
 
-function invTurnTo(direction)
-    local inverse
-    if direction == "north" then
-        inverse = "south"
-    elseif direction == "east" then
-        inverse = "west"
-    elseif direction == "south" then
-        inverse = "north"
-    elseif direction == "west" then
-        inverse = "east"
-    else
-        error("Not valid direction")
-    end
-    turnTo(inverse)
-end
 
 function moveWaypoint(waypoint_name)
     local waypoint = textutils.unserialize(settings.get("sm.states") )[waypoint_name]
