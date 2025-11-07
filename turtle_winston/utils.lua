@@ -24,3 +24,13 @@ function suckUpAndRefuel()
     turtle.dropUp()
     turtle.select(starting_slot)
 end
+
+
+function isInventoryFull()
+    for slot = 1, 16 do
+        if turtle.getItemCount(slot) == 0 then
+            return false  -- has a empty slot
+        end
+    end
+    return true  
+end
