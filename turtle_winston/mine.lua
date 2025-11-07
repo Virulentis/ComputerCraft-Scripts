@@ -48,8 +48,10 @@ function shouldReturnToBase(waypoint)
     pos.x, pos.y, pos.z = gps.locate()
     local w_pos = loadState(waypoint)
     
+
+
     local fuelMovementCost = math.abs(pos.x - w_pos.x) + math.abs(pos.y - w_pos.y) + math.abs(pos.z - w_pos.z)
-    if fuelMovementCost + 200 > turtle.getFuelLevel() then
+    if (fuelMovementCost + 200 > turtle.getFuelLevel()) or isInventoryFull() then
         saveState("temp_pos")
         moveWaypoint(waypoint)
         dropAllItemsDown()
